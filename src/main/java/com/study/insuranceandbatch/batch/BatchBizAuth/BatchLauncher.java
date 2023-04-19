@@ -1,4 +1,4 @@
-package com.study.insuranceandbatch.BatchBizAuth;
+package com.study.insuranceandbatch.batch.BatchBizAuth;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

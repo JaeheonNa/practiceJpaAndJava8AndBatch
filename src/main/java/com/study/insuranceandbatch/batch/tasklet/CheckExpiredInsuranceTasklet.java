@@ -1,4 +1,4 @@
-package com.study.insuranceandbatch.tasklet;
+package com.study.insuranceandbatch.batch.tasklet;
 
 import com.study.insuranceandbatch.common.CommonConstant;
 import com.study.insuranceandbatch.entity.Contract;

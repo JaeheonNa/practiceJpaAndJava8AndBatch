@@ -1,8 +1,8 @@
-package com.study.insuranceandbatch.job.BatchBizAuth;
+package com.study.insuranceandbatch.batch.job.BatchBizAuth;
 
-import com.study.insuranceandbatch.job.JobDelegate;
-import com.study.insuranceandbatch.tasklet.CheckExpiredInsuranceTasklet;
-import com.study.insuranceandbatch.tasklet.CheckExpiringInsuranceTasklet;
+import com.study.insuranceandbatch.batch.job.JobDelegate;
+import com.study.insuranceandbatch.batch.tasklet.CheckExpiringInsuranceTasklet;
+import com.study.insuranceandbatch.batch.tasklet.CheckExpiredInsuranceTasklet;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;

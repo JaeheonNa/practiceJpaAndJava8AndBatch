@@ -1,6 +1,6 @@
-package com.study.insuranceandbatch.quartz;
+package com.study.insuranceandbatch.batch.quartz;
 
-import com.study.insuranceandbatch.BatchBizAuth.BatchLauncher;
+import com.study.insuranceandbatch.batch.BatchBizAuth.BatchLauncher;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

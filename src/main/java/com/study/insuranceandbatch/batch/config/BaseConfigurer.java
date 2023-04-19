@@ -1,4 +1,4 @@
-package com.study.insuranceandbatch.config;
+package com.study.insuranceandbatch.batch.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.configuration.annotation.BatchConfigurer;

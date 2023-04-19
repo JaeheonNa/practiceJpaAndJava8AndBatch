@@ -1,4 +1,4 @@
-package com.study.insuranceandbatch.quartz;
+package com.study.insuranceandbatch.batch.quartz;
 
 import org.quartz.JobDetail;
 import org.quartz.Trigger;
