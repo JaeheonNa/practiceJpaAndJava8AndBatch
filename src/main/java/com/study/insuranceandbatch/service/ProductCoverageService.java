@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface ProductCoverageService {
-
+    Result init();
     Result insertProduct(ProductRequest request);
     Result insertCoverage(CoverageRequest request);
     Result insertProductCoverageMap(ProductCoverageMapRequest request);

@@ -18,6 +18,12 @@ public class ProductCoverageController {
 
     private final ProductCoverageServiceFactory productCoverageServiceFactory;
 
+    @PostMapping("init")
+    public Result init(){
+        ProductCoverageService productCoverageService = productCoverageServiceFactory.getProductCoverageService();
+        return productCoverageService.init();
+    }
+
     @PostMapping("product")
     public Result insertProduct(@RequestBody @Valid ProductRequest request){
         ProductCoverageService productCoverageService = productCoverageServiceFactory.getProductCoverageService();
