@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -12,10 +13,10 @@ public class ContractDto {
     private Long seq;
 
     private int period;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime startDtime;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime endDtime;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate startDate;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate endDate;
     private double totalCost;
     private int state; // 0: 철회, 1:정상, 2:만료
     private String stateStr;

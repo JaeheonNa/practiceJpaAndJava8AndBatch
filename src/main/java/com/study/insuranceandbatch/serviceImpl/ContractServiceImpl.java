@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -42,7 +43,7 @@ public class ContractServiceImpl implements ContractService {
 
         // 계약 생성
         double cost = calculatedCost(request.getPeriod(), request.getCoverageSeqs());
-        Contract contract = new Contract(request.getPeriod(), cost, CommonConstant.NORMAL_CONTRACT, request.getStartDtime());
+        Contract contract = new Contract(request.getPeriod(), cost, CommonConstant.NORMAL_CONTRACT, request.getStartDate());
 
         // 보험-담보 조회
         List<ProductCoverage> productCoverages = productCoverageRepository.findByProductSeqAndCoverageSeq(request.getProductSeq(), request.getCoverageSeqs());
@@ -73,9 +74,9 @@ public class ContractServiceImpl implements ContractService {
         contract.setState(request.getContractState());
 
         // 계약 기간 변경
-        if(contract.getStartDtime().plusMonths(request.getPeriod()).isBefore(LocalDateTime.now())) throw new NotPossibleChangePeriodException();
+        if(contract.getStartDate().plusMonths(request.getPeriod()).isBefore(LocalDate.now())) throw new NotPossibleChangePeriodException();
         contract.setPeriod(request.getPeriod());
-        contract.setEndDtime(contract.getStartDtime().plusMonths(request.getPeriod()));
+        contract.setEndDate(contract.getStartDate().plusMonths(request.getPeriod()));
 
         //담보 추가
         if(request.getAddCoverageSeqs().size() != 0){

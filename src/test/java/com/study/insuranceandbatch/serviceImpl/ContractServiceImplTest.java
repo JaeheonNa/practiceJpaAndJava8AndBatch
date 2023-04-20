@@ -15,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -88,10 +89,10 @@ class ContractServiceImplTest {
         coverageSeqs.add(3L);
         coverageSeqs.add(4L);
 
-        LocalDateTime startDtime = LocalDateTime.now();
+        LocalDate startDate = LocalDate.now();
         // 계약 생성
         double cost = calculatedCost(period, coverageSeqs);
-        Contract contract = new Contract(period, cost, CommonConstant.NORMAL_CONTRACT, startDtime);
+        Contract contract = new Contract(period, cost, CommonConstant.NORMAL_CONTRACT, startDate);
 
         // 보험-담보 조회
         List<ProductCoverage> productCoverages = productCoverageRepository.findByProductSeqAndCoverageSeq(productSeq, coverageSeqs);
@@ -127,12 +128,12 @@ class ContractServiceImplTest {
         List<Long> coverageSeqs = new ArrayList<>();
         coverageSeqs.add(3L);
         coverageSeqs.add(4L);
-        LocalDateTime startDtime = LocalDateTime.now();
+        LocalDate startDate = LocalDate.now();
 
 
         // 계약 생성
         double cost = calculatedCost(period, coverageSeqs);
-        Contract contract = new Contract(period, cost, CommonConstant.NORMAL_CONTRACT, startDtime);
+        Contract contract = new Contract(period, cost, CommonConstant.NORMAL_CONTRACT, startDate);
 
         // 보험-담보 조회
         List<ProductCoverage> productCoverages = productCoverageRepository.findByProductSeqAndCoverageSeq(productSeq, coverageSeqs);
@@ -169,12 +170,12 @@ class ContractServiceImplTest {
         Long productSeq = 2L;
         List<Long> coverageSeqs = new ArrayList<>();
         coverageSeqs.add(3L);
-        LocalDateTime startDtime = LocalDateTime.now();
+        LocalDate startDate = LocalDate.now();
 
 
         // 계약 생성
         double cost = calculatedCost(period1, coverageSeqs);
-        Contract contract1 = new Contract(period1, cost, CommonConstant.NORMAL_CONTRACT, startDtime);
+        Contract contract1 = new Contract(period1, cost, CommonConstant.NORMAL_CONTRACT, startDate);
 
         // 보험-담보 조회
         List<ProductCoverage> productCoverages1 = productCoverageRepository.findByProductSeqAndCoverageSeq(productSeq, coverageSeqs);
@@ -209,9 +210,9 @@ class ContractServiceImplTest {
         contract.setState(contractState);
 
         // 계약 기간 변경
-        if(contract.getStartDtime().plusMonths(period).isBefore(LocalDateTime.now())) throw new NotPossibleChangePeriodException();
+        if(contract.getStartDate().plusMonths(period).isBefore(LocalDate.now())) throw new NotPossibleChangePeriodException();
         contract.setPeriod(period);
-        contract.setEndDtime(contract.getStartDtime().plusMonths(period));
+        contract.setEndDate(contract.getStartDate().plusMonths(period));
 
         contractRepository.save(contract);
 

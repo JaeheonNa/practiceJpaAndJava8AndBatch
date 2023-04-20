@@ -24,7 +24,7 @@ public class ContractRepositoryImpl implements ContractRepositoryCustom {
     public List<Contract> findAllExpiredContract() {
         List<Contract> contracts = queryFactory.select(contract)
                 .from(contract)
-                .where(contract.endDtime.before(LocalDateTime.now())
+                .where(contract.endDate.before(LocalDate.now())
                         .and(contract.state.eq(CommonConstant.NORMAL_CONTRACT)))
                 .fetch();
         return contracts;
@@ -32,12 +32,9 @@ public class ContractRepositoryImpl implements ContractRepositoryCustom {
 
     @Override
     public List<Contract> findAllExpiringContract() {
-        LocalDateTime atStartOfDay = LocalDate.now().atStartOfDay().plusDays(7);
-        LocalDateTime atEndOfDay = LocalDate.now().atStartOfDay().plusDays(8);
-
         List<Contract> contracts = queryFactory.select(contract)
                 .from(contract)
-                .where(contract.endDtime.between(atStartOfDay, atEndOfDay)
+                .where(contract.endDate.eq(LocalDate.now().plusWeeks(1))
                         .and(contract.state.eq(CommonConstant.NORMAL_CONTRACT)))
                 .fetch();
         return contracts;

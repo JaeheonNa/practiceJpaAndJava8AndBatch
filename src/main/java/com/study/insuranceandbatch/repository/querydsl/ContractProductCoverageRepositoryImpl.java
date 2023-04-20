@@ -73,8 +73,8 @@ public class ContractProductCoverageRepositoryImpl implements ContractProductCov
                 .totalCost(contractDetailProjections.get(0).getContract().getTotalCost())
                 .state(contractDetailProjections.get(0).getContract().getState())
                 .stateStr(CommonConstant.convertInsuranceCode(contractDetailProjections.get(0).getContract().getState()))
-                .startDtime(contractDetailProjections.get(0).getContract().getStartDtime())
-                .endDtime(contractDetailProjections.get(0).getContract().getEndDtime())
+                .startDate(contractDetailProjections.get(0).getContract().getStartDate())
+                .endDate(contractDetailProjections.get(0).getContract().getEndDate())
                 .createDtime(contractDetailProjections.get(0).getContract().getCreateDtime())
                 .updateDtime(contractDetailProjections.get(0).getContract().getUpdateDtime())
                 .build();

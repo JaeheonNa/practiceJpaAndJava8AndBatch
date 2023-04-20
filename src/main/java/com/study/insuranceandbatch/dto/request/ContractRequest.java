@@ -5,6 +5,7 @@ import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -17,8 +18,8 @@ public class ContractRequest {
     @NotNull
     private int period;
     @NotNull
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime startDtime;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate startDate;
 
 
 }

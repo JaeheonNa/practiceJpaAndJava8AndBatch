@@ -11,6 +11,9 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+import static com.study.insuranceandbatch.entity.QCoverage.coverage1;
+import static com.study.insuranceandbatch.entity.QProductCoverage.productCoverage;
+
 
 @Repository
 @RequiredArgsConstructor
@@ -22,10 +25,10 @@ public class CoverageRepositoryImpl implements CoverageRepositoryCustom {
     @Override
     public List<Coverage> findAllCoveragesByProduct(Product product) {
         List<Coverage> coverages = queryFactory.select(
-                QCoverage.coverage1
-                ).from(QProductCoverage.productCoverage)
-                .innerJoin(QCoverage.coverage1).on(QProductCoverage.productCoverage.coverage.eq(QCoverage.coverage1))
-                .where(QProductCoverage.productCoverage.product.eq(product))
+                coverage1
+                ).from(productCoverage)
+                .innerJoin(coverage1).on(productCoverage.coverage.eq(coverage1))
+                .where(productCoverage.product.eq(product))
                 .fetch();
         return coverages;
     }

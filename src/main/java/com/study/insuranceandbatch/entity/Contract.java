@@ -10,6 +10,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,10 +30,10 @@ public class Contract {
 
     private int period;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime startDtime;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime endDtime;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate startDate;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate endDate;
 
     private double totalCost;
 
@@ -50,11 +51,11 @@ public class Contract {
     @OneToMany(mappedBy = "contract")
     private List<ContractProductCoverage> contractProductCoverageList = new ArrayList<>();
 
-    public Contract(int period, double totalCost, int state, LocalDateTime startDtime) {
+    public Contract(int period, double totalCost, int state, LocalDate startDate) {
         this.period = period;
         this.totalCost = totalCost;
         this.state = state;
-        this.startDtime = startDtime;
-        this.endDtime = startDtime.plusMonths(period);
+        this.startDate = startDate;
+        this.endDate = startDate.plusMonths(period);
     }
 }
