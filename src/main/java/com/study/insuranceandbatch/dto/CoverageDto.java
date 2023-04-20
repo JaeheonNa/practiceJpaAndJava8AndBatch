@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 public class CoverageDto {
+    private Long seq;
     private String name;
     private double coverage;
     private double base;

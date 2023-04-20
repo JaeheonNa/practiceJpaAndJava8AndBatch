@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 public class ContractDto {
+    private Long seq;
 
     private int period;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")

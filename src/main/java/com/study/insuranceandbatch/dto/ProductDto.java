@@ -8,6 +8,7 @@ import java.util.List;
 @Data
 @Builder
 public class ProductDto {
+    private Long seq;
     private String name;
     private List<CoverageDto> coverages;
 }

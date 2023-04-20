@@ -18,6 +18,12 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.study.insuranceandbatch.entity.QContract.contract;
+import static com.study.insuranceandbatch.entity.QProductCoverage.productCoverage;
+import static com.study.insuranceandbatch.entity.QContractProductCoverage.contractProductCoverage;
+import static com.study.insuranceandbatch.entity.QCoverage.coverage1;
+import static com.study.insuranceandbatch.entity.QProduct.product;
+
 @Repository
 @RequiredArgsConstructor
 public class ContractProductCoverageRepositoryImpl implements ContractProductCoverageRepositoryCustom {
@@ -27,23 +33,24 @@ public class ContractProductCoverageRepositoryImpl implements ContractProductCov
     @Override
     public ContractDetailResponse findByContractSeq(Long contractSeq) {
         List<ContractDetailProjection> contractDetailProjections = queryFactory.select(Projections.constructor(ContractDetailProjection.class,
-                        QContract.contract,
-                        QProduct.product,
-                        QCoverage.coverage1,
-                        QContractProductCoverage.contractProductCoverage
+                        contract,
+                        product,
+                        coverage1,
+                        contractProductCoverage
                 ))
-                .from(QContractProductCoverage.contractProductCoverage)
-                .join(QContract.contract).on(QContractProductCoverage.contractProductCoverage.contract.seq.eq(QContract.contract.seq))
-                .join(QProductCoverage.productCoverage).on(QContractProductCoverage.contractProductCoverage.productCoverage.seq.eq(QProductCoverage.productCoverage.seq))
-                .join(QProduct.product).on(QProductCoverage.productCoverage.product.seq.eq(QProduct.product.seq))
-                .join(QCoverage.coverage1).on(QProductCoverage.productCoverage.coverage.seq.eq(QCoverage.coverage1.seq))
-                .where(QContractProductCoverage.contractProductCoverage.contract.seq.eq(contractSeq))
+                .from(contractProductCoverage)
+                .join(contract).on(contractProductCoverage.contract.seq.eq(contract.seq))
+                .join(productCoverage).on(contractProductCoverage.productCoverage.seq.eq(productCoverage.seq))
+                .join(product).on(productCoverage.product.seq.eq(product.seq))
+                .join(coverage1).on(productCoverage.coverage.seq.eq(coverage1.seq))
+                .where(contractProductCoverage.contract.seq.eq(contractSeq))
                 .fetch();
 
         if(contractDetailProjections.size() == 0) throw new NoSuchContractException();
 
         List<CoverageDto> coverageDtos = contractDetailProjections.stream()
                 .map(cd -> CoverageDto.builder()
+                        .seq(cd.getCoverage().getSeq())
                         .name(cd.getCoverage().getName())
                         .coverage(cd.getCoverage().getCoverage())
                         .base(cd.getCoverage().getBase())
@@ -55,11 +62,13 @@ public class ContractProductCoverageRepositoryImpl implements ContractProductCov
                 .collect(Collectors.toList());
 
         ProductDto productDto = ProductDto.builder()
+                .seq(contractDetailProjections.get(0).getProduct().getSeq())
                 .name(contractDetailProjections.get(0).getProduct().getName())
                 .coverages(coverageDtos)
                 .build();
 
         ContractDto contractDto = ContractDto.builder()
+                .seq(contractDetailProjections.get(0).getContract().getSeq())
                 .period(contractDetailProjections.get(0).getContract().getPeriod())
                 .totalCost(contractDetailProjections.get(0).getContract().getTotalCost())
                 .state(contractDetailProjections.get(0).getContract().getState())
@@ -80,10 +89,10 @@ public class ContractProductCoverageRepositoryImpl implements ContractProductCov
 
     @Override
     public List<ContractProductCoverage> findContractProductCoverageByContractSeq(Long contractSeq, List<Long> coverageSeqs) {
-        List<ContractProductCoverage> contractProductCoverages = queryFactory.select(QContractProductCoverage.contractProductCoverage)
-                .from(QContractProductCoverage.contractProductCoverage)
-                .where(QContractProductCoverage.contractProductCoverage.contract.seq.eq(contractSeq)
-                        .and(QContractProductCoverage.contractProductCoverage.productCoverage.coverage.seq.in(coverageSeqs)))
+        List<ContractProductCoverage> contractProductCoverages = queryFactory.select(contractProductCoverage)
+                .from(contractProductCoverage)
+                .where(contractProductCoverage.contract.seq.eq(contractSeq)
+                        .and(contractProductCoverage.productCoverage.coverage.seq.in(coverageSeqs)))
                 .fetch();
         return contractProductCoverages;
     }
