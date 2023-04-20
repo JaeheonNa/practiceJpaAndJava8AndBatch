@@ -11,10 +11,11 @@ import java.util.List;
 public interface ProductCoverageRepositoryCustom {
     List<ProductCoverageProjection> getAliveProductCoverages();
     List<ProductCoverage> findByProductSeqAndCoverageSeqs(Long productSeq, List<Long> coverageSeqs);
-    ProductCoverage findByProductSeqAndCoverageSeq(Long productSeq, Long coverageSeq);
     List<Long> getAllCoveragesByProduct(Product product);
 
     List<ProductCoverage> findAllProductCoveragesByCoverageSeqs(List<Long> coverageSeqs);
+    List<ProductCoverage> findAliveByProductAndCoverageSeqs(Product product, List<Long> coverageSeqs);
+    List<ProductCoverage> findAliveProductCoverageByProductAndCoverages(Product product, List<Long> coverageSeqs);
 
 
 }

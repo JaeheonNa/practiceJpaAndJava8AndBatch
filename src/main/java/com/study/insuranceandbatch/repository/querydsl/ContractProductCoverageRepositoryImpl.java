@@ -93,7 +93,16 @@ public class ContractProductCoverageRepositoryImpl implements ContractProductCov
                 .from(contractProductCoverage)
                 .where(contractProductCoverage.contract.seq.eq(contractSeq)
                         .and(contractProductCoverage.productCoverage.coverage.seq.in(coverageSeqs)))
-                .fetchJoin().fetch();
+                .fetch();
         return contractProductCoverages;
+    }
+
+    @Override
+    public void updateContractProductCoverage(Contract contract, List<ProductCoverage> requestProductCoverages){
+        queryFactory.update(contractProductCoverage)
+                .set(contractProductCoverage.state, CommonConstant.ALIVE)
+                .where(contractProductCoverage.contract.eq(contract)
+                        .and(contractProductCoverage.productCoverage.in(requestProductCoverages)))
+                .execute();
     }
 }

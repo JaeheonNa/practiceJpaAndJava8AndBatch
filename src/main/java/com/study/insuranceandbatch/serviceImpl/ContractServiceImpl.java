@@ -17,6 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,6 +43,9 @@ public class ContractServiceImpl implements ContractService {
     @Transactional
     public Result insertContract(ContractRequest request) {
 
+        List<ProductCoverage> requestedProductCoverages = productCoverageRepository.findAllProductCoveragesByCoverageSeqs(request.getCoverageSeqs());
+        List<ProductCoverage> deadProductCoverages = requestedProductCoverages.stream().filter(rpc -> rpc.getUseYn() == CommonConstant.DEAD).collect(Collectors.toList());
+        if(deadProductCoverages.size() != 0) throw new NotAvailableProductCoverageException();
         // 계약 생성
         double cost = calculatedCost(request.getPeriod(), request.getCoverageSeqs());
         Contract contract = new Contract(request.getPeriod(), cost, CommonConstant.NORMAL_CONTRACT, request.getStartDate());
@@ -70,6 +75,12 @@ public class ContractServiceImpl implements ContractService {
     @Transactional
     public Result updateContract(UpdateContractRequest request) {
 
+        //추가하려는 담보와 제거하려는 담보가 동시에 있는지 확인. 깊은 복사 사용.
+        List<Long> addCoverageSeqs = new ArrayList<>(request.getAddCoverageSeqs());
+        List<Long> cancelCoverageSeqs = new ArrayList<>(request.getCancelCoverageSeqs());
+        addCoverageSeqs.retainAll(cancelCoverageSeqs);
+        if(addCoverageSeqs.size() != 0) throw new NotAvailableSimultaneouslyAddAndCancelExeption();
+
         // 계약 상태 변경
         Contract contract = contractRepository.findById(request.getContractSeq()).orElseThrow(()->new NoSuchContractException());
         if(contract.getState() == CommonConstant.EXPIRED_CONTRACT) throw new ExpiredContractException();
@@ -82,33 +93,42 @@ public class ContractServiceImpl implements ContractService {
 
         //담보 추가
         if(request.getAddCoverageSeqs().size() != 0){
-            List<ContractProductCoverage> allByContract = contractProductCoverageRepository.findAllByContract(contract);
-            Product product = allByContract.get(0).getProductCoverage().getProduct();
-            List<Long> coveragesForProduct = productCoverageRepository.getAllCoveragesByProduct(product);
-            request.getAddCoverageSeqs().retainAll(coveragesForProduct);
-            if(request.getAddCoverageSeqs().size() == 0) throw new NoSuchProductOrCoverageException();
+            /*
+            요청한 contractProductCoverage가
+            1. productCoverage가 활성화 상태여야 하고,
+            2. 해당 contract에 매핑된 productCoverage가 없거나 '철회'상태여야 함.
+             */
+            Product product = contract.getContractProductCoverageList().get(0).getProductCoverage().getProduct();
+            List<ProductCoverage> requestProductCoverages = productCoverageRepository.findAliveByProductAndCoverageSeqs(product, request.getAddCoverageSeqs());
+            if(request.getAddCoverageSeqs().size() != requestProductCoverages.size()) throw new NotAvailableProductCoverageException();
+            List<ContractProductCoverage> requestContract = contractProductCoverageRepository.findAllByContract(contract);
+            List<ProductCoverage> registeredProductCoverages = requestContract.stream().map(rc -> rc.getProductCoverage()).collect(Collectors.toList());
 
-            allByContract.stream().forEach(cpc->{
-                for(Long coverageSeq : request.getAddCoverageSeqs()){
-                    if(coverageSeq == cpc.getProductCoverage().getCoverage().getSeq()){
-                        cpc.setState(CommonConstant.NORMAL_CONTRACT);
-                        contractProductCoverageRepository.save(cpc);
-                    }
-                }
-            });
+            // 없다면 생성.
+            requestProductCoverages.stream()
+                    .filter(rpc ->!registeredProductCoverages.contains(rpc))
+                    .forEach(rpc -> {
+                        ContractProductCoverage contractProductCoverage = new ContractProductCoverage(contract, rpc, CommonConstant.ALIVE);
+                        contractProductCoverageRepository.save(contractProductCoverage);
+                    });
+
+            // 철회라면 정상으로.
+            contractProductCoverageRepository.updateContractProductCoverage(contract, requestProductCoverages);
+            contractProductCoverageRepository.flush();
         }
 
         // 담보 철회
         if(request.getCancelCoverageSeqs().size() != 0){
-
-            List<ContractProductCoverage> preContract = contractProductCoverageRepository.findAllByContract(contract);
-            if(preContract.size() == request.getCancelCoverageSeqs().size()) throw new ImpossibleCancelCoverageException();
             List<ContractProductCoverage> contractProductCoverages = contractProductCoverageRepository.findContractProductCoverageByContractSeq(request.getContractSeq(), request.getCancelCoverageSeqs());
-
+            // 철회로 상태 변경
             contractProductCoverages.stream().forEach(cpc ->{
                 cpc.setState(CommonConstant.CANCELED_CONTRACT);
                 contractProductCoverageRepository.save(cpc);
             });
+            //담보 상태가 '모두' 철회라면 예외 처리.
+            List<ContractProductCoverage> allByContract = contractProductCoverageRepository.findAllByContract(contract);
+            long aliveContractCount = allByContract.stream().filter(ac -> ac.getState() == CommonConstant.ALIVE).count();
+            if(aliveContractCount == 0) throw new ImpossibleCancelCoverageException();
         }
 
         contractRepository.save(contract);

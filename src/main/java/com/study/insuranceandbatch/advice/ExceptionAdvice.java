@@ -103,5 +103,27 @@ public class ExceptionAdvice {
         return new Result().fail("이미 판매된 상품은 제거할 수 없습니다.", 400);
     }
 
+    @ExceptionHandler(NotAvailableProductCoverageException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    protected Result notAvailableProductCoverageException(Exception e) {
+        log.error(ExceptionUtils.getStackTrace(e));
+        return new Result().fail("계약이 불가능한 상품 구성입니다.", 400);
+    }
+    @ExceptionHandler(AlreadyRegisteredProductOrCoverageException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    protected Result alreadyRegisteredProductOrCoverageException(Exception e) {
+        log.error(ExceptionUtils.getStackTrace(e));
+        return new Result().fail("이미 등록된 상품 혹은 담보입니다.", 400);
+    }
+
+    @ExceptionHandler(NotAvailableSimultaneouslyAddAndCancelExeption.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    protected Result notAvailableSimultaneouslyAddAndCancelExeption(Exception e) {
+        log.error(ExceptionUtils.getStackTrace(e));
+        return new Result().fail("한 가지 담보를 동시에 추가-철회할 수 없습니다.", 400);
+    }
 
 }

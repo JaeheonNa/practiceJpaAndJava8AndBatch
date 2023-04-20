@@ -4,15 +4,16 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.study.insuranceandbatch.common.CommonConstant;
 import com.study.insuranceandbatch.dto.projection.ProductCoverageProjection;
+import com.study.insuranceandbatch.entity.Contract;
 import com.study.insuranceandbatch.entity.Product;
 import com.study.insuranceandbatch.entity.ProductCoverage;
 import com.study.insuranceandbatch.repository.querydsl.customInterface.ProductCoverageRepositoryCustom;
-import com.study.insuranceandbatch.entity.QProductCoverage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+import static com.study.insuranceandbatch.entity.QContractProductCoverage.contractProductCoverage;
 import static com.study.insuranceandbatch.entity.QProductCoverage.productCoverage;
 
 
@@ -39,26 +40,17 @@ public class ProductCoverageRepositoryImpl implements ProductCoverageRepositoryC
         List<ProductCoverage> productCoverages = queryFactory.selectFrom(productCoverage)
                 .where(productCoverage.product.seq.eq(productSeq)
                         .and(productCoverage.coverage.seq.in(coverageSeqs)))
-                .fetchJoin().fetch();
+                .fetch();
         return productCoverages;
-    }
-
-    @Override
-    public ProductCoverage findByProductSeqAndCoverageSeq(Long productSeq, Long coverageSeq) {
-        List<ProductCoverage> productCoverages = queryFactory.selectFrom(productCoverage)
-                .where(productCoverage.product.seq.eq(productSeq)
-                        .and(productCoverage.coverage.seq.eq(coverageSeq)))
-                .fetchJoin().fetch();
-        if(productCoverages.size() == 0) return null;
-        else return productCoverages.get(0);
     }
 
     @Override
     public List<Long> getAllCoveragesByProduct(Product product) {
         List<Long> coverages = queryFactory.select(productCoverage.coverage.seq)
                 .from(productCoverage)
-                .where(productCoverage.product.eq(product))
-                .fetchJoin().fetch();
+                .where(productCoverage.product.eq(product)
+                        .and(productCoverage.useYn.eq(CommonConstant.ALIVE)))
+                .fetch();
         return coverages;
     }
 
@@ -66,8 +58,30 @@ public class ProductCoverageRepositoryImpl implements ProductCoverageRepositoryC
     public List<ProductCoverage> findAllProductCoveragesByCoverageSeqs(List<Long> coverageSeqs) {
         List<ProductCoverage> productCoverages = queryFactory.selectFrom(productCoverage)
                 .where(productCoverage.coverage.seq.in(coverageSeqs))
-                .fetchJoin().fetch();
+                .fetch();
         return productCoverages;
     }
+
+    @Override
+    public List<ProductCoverage> findAliveProductCoverageByProductAndCoverages(Product product, List<Long> coverageSeqs) {
+        List<ProductCoverage> productCoverages = queryFactory.select(productCoverage)
+                .from(productCoverage)
+                .where(productCoverage.product.eq(product)
+                        .and(productCoverage.coverage.seq.in(coverageSeqs)))
+                .fetch();
+        return productCoverages;
+    }
+
+    @Override
+    public List<ProductCoverage> findAliveByProductAndCoverageSeqs(Product product, List<Long> coverageSeqs){
+        List<ProductCoverage> productCoverages = queryFactory.select(productCoverage)
+                .from(productCoverage)
+                .where(productCoverage.product.eq(product)
+                        .and(productCoverage.coverage.seq.in(coverageSeqs))
+                        .and(productCoverage.useYn.eq(CommonConstant.ALIVE)))
+                .fetch();
+        return productCoverages;
+    }
+
 
 }
