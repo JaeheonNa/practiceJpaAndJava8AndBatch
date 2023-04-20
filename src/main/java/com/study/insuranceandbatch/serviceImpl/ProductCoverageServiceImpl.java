@@ -64,6 +64,7 @@ public class ProductCoverageServiceImpl implements ProductCoverageService {
     @Transactional
     public Result getAllProducts() {
         List<Product> products = productRepository.findAll();
+        if(products.size() == 0) return new Result().success("등록된 보험이 없습니다.");
         return new Result().success(products);
     }
 
@@ -71,6 +72,7 @@ public class ProductCoverageServiceImpl implements ProductCoverageService {
     @Transactional
     public Result getAllCoverage() {
         List<Coverage> coverages = coverageRepository.findAll();
+        if(coverages.size() == 0) return new Result().success("등록된 담보가 없습니다.");
         return new Result().success(coverages);
     }
 
@@ -88,6 +90,7 @@ public class ProductCoverageServiceImpl implements ProductCoverageService {
                     .coverages(coverageForProduct).build();
         }).collect(Collectors.toList());
 
+        if(responseResult.size()==0) new Result().success("매핑된 보험-담보 상품이 없습니다.");
         return new Result().success(responseResult);
     }
 
