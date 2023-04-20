@@ -73,11 +73,15 @@ public class ProductCoverageServiceImpl implements ProductCoverageService {
 
     @Override
     public Result deleteProductCoverageMap(ProductCoverageMapRequest request) {
+        // 보험 상품 존재 확인
         Product product = productRepository.findById(request.getProductSeq()).orElseThrow(() -> new NoSuchProductException());
+
+        // 담보 존재 확인
         List<Coverage> coverages = coverageRepository.findAllById(request.getCoverageSeqs());
         if(coverages.size() == 0 || request.getCoverageSeqs().size() != coverages.size())
             throw new NoSuchCoverageException();
 
+        // 보험-담보 매핑 해제
         List<ProductCoverage> productCoverages = productCoverageRepository.findByProductSeqAndCoverageSeqs(product.getSeq(), request.getCoverageSeqs());
         productCoverages.stream().forEach(pc -> productCoverageRepository.delete(pc));
 
