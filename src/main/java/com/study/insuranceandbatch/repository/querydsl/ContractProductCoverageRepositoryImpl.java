@@ -93,7 +93,7 @@ public class ContractProductCoverageRepositoryImpl implements ContractProductCov
                 .from(contractProductCoverage)
                 .where(contractProductCoverage.contract.seq.eq(contractSeq)
                         .and(contractProductCoverage.productCoverage.coverage.seq.in(coverageSeqs)))
-                .fetch();
+                .fetchJoin().fetch();
         return contractProductCoverages;
     }
 }

@@ -36,7 +36,7 @@ public class ContractRepositoryImpl implements ContractRepositoryCustom {
                 .from(contract)
                 .where(contract.endDate.eq(LocalDate.now().plusWeeks(1))
                         .and(contract.state.eq(CommonConstant.NORMAL_CONTRACT)))
-                .fetch();
+                .fetchJoin().fetch();
         return contracts;
     }
 }

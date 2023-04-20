@@ -39,7 +39,7 @@ public class ProductCoverageRepositoryImpl implements ProductCoverageRepositoryC
         List<ProductCoverage> productCoverages = queryFactory.selectFrom(productCoverage)
                 .where(productCoverage.product.seq.eq(productSeq)
                         .and(productCoverage.coverage.seq.in(coverageSeqs)))
-                .fetch();
+                .fetchJoin().fetch();
         return productCoverages;
     }
 
@@ -48,7 +48,7 @@ public class ProductCoverageRepositoryImpl implements ProductCoverageRepositoryC
         List<ProductCoverage> productCoverages = queryFactory.selectFrom(productCoverage)
                 .where(productCoverage.product.seq.eq(productSeq)
                         .and(productCoverage.coverage.seq.eq(coverageSeq)))
-                .fetch();
+                .fetchJoin().fetch();
         if(productCoverages.size() == 0) return null;
         else return productCoverages.get(0);
     }
@@ -58,7 +58,7 @@ public class ProductCoverageRepositoryImpl implements ProductCoverageRepositoryC
         List<Long> coverages = queryFactory.select(productCoverage.coverage.seq)
                 .from(productCoverage)
                 .where(productCoverage.product.eq(product))
-                .fetch();
+                .fetchJoin().fetch();
         return coverages;
     }
 
@@ -66,7 +66,7 @@ public class ProductCoverageRepositoryImpl implements ProductCoverageRepositoryC
     public List<ProductCoverage> findAllProductCoveragesByCoverageSeqs(List<Long> coverageSeqs) {
         List<ProductCoverage> productCoverages = queryFactory.selectFrom(productCoverage)
                 .where(productCoverage.coverage.seq.in(coverageSeqs))
-                .fetch();
+                .fetchJoin().fetch();
         return productCoverages;
     }
 
