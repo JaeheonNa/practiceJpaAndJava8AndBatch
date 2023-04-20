@@ -86,4 +86,12 @@ public class ExceptionAdvice {
         log.error(ExceptionUtils.getStackTrace(e));
         return new Result().fail("담보를 모두 철회할 수 없습니다.", 400);
     }
+
+    @ExceptionHandler(AlreadyMappedException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    protected Result alreadyMappedException(Exception e) {
+        log.error(ExceptionUtils.getStackTrace(e));
+        return new Result().fail("이미 매핑된 정보는 추가 매핑할 수 없습니다.", 400);
+    }
 }

@@ -94,7 +94,7 @@ class ContractServiceImplTest {
         Contract contract = new Contract(period, cost, CommonConstant.NORMAL_CONTRACT, startDate);
 
         // 보험-담보 조회
-        List<ProductCoverage> productCoverages = productCoverageRepository.findByProductSeqAndCoverageSeq(productSeq, coverageSeqs);
+        List<ProductCoverage> productCoverages = productCoverageRepository.findByProductSeqAndCoverageSeqs(productSeq, coverageSeqs);
         Assertions.assertThat(productCoverages.size()).isEqualTo(coverageSeqs.size());
         if(productCoverages.size() != coverageSeqs.size()) throw new NoSuchProductOrCoverageException();
 
@@ -135,7 +135,7 @@ class ContractServiceImplTest {
         Contract contract = new Contract(period, cost, CommonConstant.NORMAL_CONTRACT, startDate);
 
         // 보험-담보 조회
-        List<ProductCoverage> productCoverages = productCoverageRepository.findByProductSeqAndCoverageSeq(productSeq, coverageSeqs);
+        List<ProductCoverage> productCoverages = productCoverageRepository.findByProductSeqAndCoverageSeqs(productSeq, coverageSeqs);
         Assertions.assertThat(productCoverages.size()).isEqualTo(coverageSeqs.size());
         if(productCoverages.size() != coverageSeqs.size()) throw new NoSuchProductOrCoverageException();
 
@@ -177,7 +177,7 @@ class ContractServiceImplTest {
         Contract contract1 = new Contract(period1, cost, CommonConstant.NORMAL_CONTRACT, startDate);
 
         // 보험-담보 조회
-        List<ProductCoverage> productCoverages1 = productCoverageRepository.findByProductSeqAndCoverageSeq(productSeq, coverageSeqs);
+        List<ProductCoverage> productCoverages1 = productCoverageRepository.findByProductSeqAndCoverageSeqs(productSeq, coverageSeqs);
         Assertions.assertThat(productCoverages1.size()).isEqualTo(coverageSeqs.size());
         if(productCoverages1.size() != coverageSeqs.size()) throw new NoSuchProductOrCoverageException();
 

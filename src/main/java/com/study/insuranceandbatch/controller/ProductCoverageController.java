@@ -42,6 +42,12 @@ public class ProductCoverageController {
         return productCoverageService.insertProductCoverageMap(request);
     }
 
+    @DeleteMapping("map")
+    public Result deleteProductCoverageMap(@RequestBody @Valid ProductCoverageMapRequest request){
+        ProductCoverageService productCoverageService = productCoverageServiceFactory.getProductCoverageService();
+        return productCoverageService.deleteProductCoverageMap(request);
+    }
+
     @GetMapping("product/all")
     public Result getAllProducts(){
         ProductCoverageService productCoverageService = productCoverageServiceFactory.getProductCoverageService();

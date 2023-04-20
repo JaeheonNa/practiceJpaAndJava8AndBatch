@@ -46,7 +46,7 @@ public class ContractServiceImpl implements ContractService {
         Contract contract = new Contract(request.getPeriod(), cost, CommonConstant.NORMAL_CONTRACT, request.getStartDate());
 
         // 보험-담보 조회
-        List<ProductCoverage> productCoverages = productCoverageRepository.findByProductSeqAndCoverageSeq(request.getProductSeq(), request.getCoverageSeqs());
+        List<ProductCoverage> productCoverages = productCoverageRepository.findByProductSeqAndCoverageSeqs(request.getProductSeq(), request.getCoverageSeqs());
         if(productCoverages.size() != request.getCoverageSeqs().size()) throw new NoSuchProductOrCoverageException();
 
         // 계약 저장

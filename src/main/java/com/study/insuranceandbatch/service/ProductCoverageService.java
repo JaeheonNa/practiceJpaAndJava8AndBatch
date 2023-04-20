@@ -17,4 +17,6 @@ public interface ProductCoverageService {
     Result getAllCoverage();
 
     Result getAllProductCoverages();
+
+    Result deleteProductCoverageMap(ProductCoverageMapRequest request);
 }

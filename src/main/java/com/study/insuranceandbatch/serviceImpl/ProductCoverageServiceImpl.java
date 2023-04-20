@@ -1,5 +1,6 @@
 package com.study.insuranceandbatch.serviceImpl;
 
+import com.study.insuranceandbatch.advice.exception.AlreadyMappedException;
 import com.study.insuranceandbatch.advice.exception.NoSuchCoverageException;
 import com.study.insuranceandbatch.advice.exception.NoSuchProductException;
 import com.study.insuranceandbatch.dto.Result;
@@ -49,15 +50,38 @@ public class ProductCoverageServiceImpl implements ProductCoverageService {
     @Override
     @Transactional
     public Result insertProductCoverageMap(ProductCoverageMapRequest request) {
+        // 보험 상품 존재 확인
         Product product = productRepository.findById(request.getProductSeq()).orElseThrow(() -> new NoSuchProductException());
+
+        // 담보 존재 확인
         List<Coverage> coverages = coverageRepository.findAllById(request.getCoverageSeqs());
         if(coverages.size() == 0 || request.getCoverageSeqs().size() != coverages.size())
             throw new NoSuchCoverageException();
+
+        // 보험 상품-담보 매핑 존재 확인
+        List<ProductCoverage> productCoverageList = productCoverageRepository.findByProductSeqAndCoverageSeqs(product.getSeq(), request.getCoverageSeqs());
+        if(productCoverageList.size() != 0) throw new AlreadyMappedException();
+
+        // 보험 상품-담보 매핑
         coverages.stream().forEach(c-> {
             ProductCoverage productCoverage = new ProductCoverage(product, c);
             productCoverageRepository.save(productCoverage);
         });
+
         return new Result().success("보험 상품과 담보가 정상 매핑되었습니다.");
+    }
+
+    @Override
+    public Result deleteProductCoverageMap(ProductCoverageMapRequest request) {
+        Product product = productRepository.findById(request.getProductSeq()).orElseThrow(() -> new NoSuchProductException());
+        List<Coverage> coverages = coverageRepository.findAllById(request.getCoverageSeqs());
+        if(coverages.size() == 0 || request.getCoverageSeqs().size() != coverages.size())
+            throw new NoSuchCoverageException();
+
+        List<ProductCoverage> productCoverages = productCoverageRepository.findByProductSeqAndCoverageSeqs(product.getSeq(), request.getCoverageSeqs());
+        productCoverages.stream().forEach(pc -> productCoverageRepository.delete(pc));
+
+        return new Result().success("보험 상품에서 담보가 정상적 제거되었습니다.");
     }
 
     @Override
@@ -93,6 +117,8 @@ public class ProductCoverageServiceImpl implements ProductCoverageService {
         if(responseResult.size()==0) new Result().success("매핑된 보험-담보 상품이 없습니다.");
         return new Result().success(responseResult);
     }
+
+
 
     @Override
     @Transactional

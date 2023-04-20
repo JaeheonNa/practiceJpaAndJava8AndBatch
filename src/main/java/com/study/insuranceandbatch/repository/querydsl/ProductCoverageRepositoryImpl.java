@@ -33,12 +33,22 @@ public class ProductCoverageRepositoryImpl implements ProductCoverageRepositoryC
     }
 
     @Override
-    public List<ProductCoverage> findByProductSeqAndCoverageSeq(Long productSeq, List<Long> coverageSeqs) {
+    public List<ProductCoverage> findByProductSeqAndCoverageSeqs(Long productSeq, List<Long> coverageSeqs) {
         List<ProductCoverage> productCoverages = queryFactory.selectFrom(productCoverage)
                 .where(productCoverage.product.seq.eq(productSeq)
                         .and(productCoverage.coverage.seq.in(coverageSeqs)))
                 .fetch();
         return productCoverages;
+    }
+
+    @Override
+    public ProductCoverage findByProductSeqAndCoverageSeq(Long productSeq, Long coverageSeq) {
+        List<ProductCoverage> productCoverages = queryFactory.selectFrom(productCoverage)
+                .where(productCoverage.product.seq.eq(productSeq)
+                        .and(productCoverage.coverage.seq.eq(coverageSeq)))
+                .fetch();
+        if(productCoverages.size() == 0) return null;
+        else return productCoverages.get(0);
     }
 
     @Override
