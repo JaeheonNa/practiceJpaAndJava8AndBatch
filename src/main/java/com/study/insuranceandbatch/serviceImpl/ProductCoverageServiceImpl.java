@@ -1,8 +1,10 @@
 package com.study.insuranceandbatch.serviceImpl;
 
 import com.study.insuranceandbatch.advice.exception.AlreadyMappedException;
+import com.study.insuranceandbatch.advice.exception.AlreadySoldInsuranceException;
 import com.study.insuranceandbatch.advice.exception.NoSuchCoverageException;
 import com.study.insuranceandbatch.advice.exception.NoSuchProductException;
+import com.study.insuranceandbatch.common.CommonConstant;
 import com.study.insuranceandbatch.dto.Result;
 import com.study.insuranceandbatch.dto.projection.ProductCoverageProjection;
 import com.study.insuranceandbatch.dto.request.CoverageRequest;
@@ -17,10 +19,12 @@ import com.study.insuranceandbatch.repository.ProductCoverageRepository;
 import com.study.insuranceandbatch.repository.ProductRepository;
 import com.study.insuranceandbatch.service.ProductCoverageService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -60,10 +64,21 @@ public class ProductCoverageServiceImpl implements ProductCoverageService {
 
         // 보험 상품-담보 매핑 존재 확인
         List<ProductCoverage> productCoverageList = productCoverageRepository.findByProductSeqAndCoverageSeqs(product.getSeq(), request.getCoverageSeqs());
-        if(productCoverageList.size() != 0) throw new AlreadyMappedException();
+
+        // 존재하지만 미사용 중인 상품은 사용 여부를 '사용'으로 변경
+        List<ProductCoverage> deadProductCoverages = productCoverageList.stream().filter(pc -> pc.getUseYn() == CommonConstant.DEAD).collect(Collectors.toList());
+        deadProductCoverages.stream().forEach(dpc ->{
+            dpc.setUseYn(CommonConstant.ALIVE);
+            productCoverageRepository.save(dpc);
+        });
+
+        // 이미 매핑된 담보들 요청된 매핑 담보들을 비교, 요청된 매핑 중 매핑이 안 된 녀석만 골라내기.
+        Set<Coverage> existMappedCoverages = productCoverageList.stream().map(pc -> pc.getCoverage()).collect(Collectors.toSet());
+        Set<Coverage> requestedCoverages = coverages.stream().collect(Collectors.toSet());
+        requestedCoverages.removeAll(existMappedCoverages);
 
         // 보험 상품-담보 매핑
-        coverages.stream().forEach(c-> {
+        requestedCoverages.stream().forEach(c-> {
             ProductCoverage productCoverage = new ProductCoverage(product, c);
             productCoverageRepository.save(productCoverage);
         });
@@ -72,18 +87,22 @@ public class ProductCoverageServiceImpl implements ProductCoverageService {
     }
 
     @Override
+    @Transactional
     public Result deleteProductCoverageMap(ProductCoverageMapRequest request) {
         // 보험 상품 존재 확인
         Product product = productRepository.findById(request.getProductSeq()).orElseThrow(() -> new NoSuchProductException());
 
-        // 담보 존재 확인
+        // 담보 존재 확인 및 기판매 상품 확인
         List<Coverage> coverages = coverageRepository.findAllById(request.getCoverageSeqs());
-        if(coverages.size() == 0 || request.getCoverageSeqs().size() != coverages.size())
+        if (coverages.size() == 0 || request.getCoverageSeqs().size() != coverages.size())
             throw new NoSuchCoverageException();
 
         // 보험-담보 매핑 해제
         List<ProductCoverage> productCoverages = productCoverageRepository.findByProductSeqAndCoverageSeqs(product.getSeq(), request.getCoverageSeqs());
-        productCoverages.stream().forEach(pc -> productCoverageRepository.delete(pc));
+        productCoverages.stream().forEach(pc -> {
+            pc.setUseYn(CommonConstant.DEAD);
+            productCoverageRepository.save(pc);
+        });
 
         return new Result().success("보험 상품에서 담보가 정상적 제거되었습니다.");
     }
@@ -107,7 +126,7 @@ public class ProductCoverageServiceImpl implements ProductCoverageService {
     @Override
     @Transactional
     public Result getAllProductCoverages() {
-        List<ProductCoverageProjection> allProductCoverages = productCoverageRepository.getAllProductCoverages();
+        List<ProductCoverageProjection> allProductCoverages = productCoverageRepository.getAliveProductCoverages();
 
         List<Product> products = allProductCoverages.stream().map(pc -> pc.getProduct()).distinct().collect(Collectors.toList());
 

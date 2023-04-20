@@ -60,12 +60,14 @@ public class ContractServiceImpl implements ContractService {
     }
 
     @Override
+    @Transactional
     public Result getContract(Long contractSeq) {
         ContractDetailResponse contractDetail = contractProductCoverageRepository.findByContractSeq(contractSeq);
         return new Result().success(contractDetail);
     }
 
     @Override
+    @Transactional
     public Result updateContract(UpdateContractRequest request) {
 
         // 계약 상태 변경

@@ -1,15 +1,20 @@
 package com.study.insuranceandbatch.controller;
 
+import com.study.insuranceandbatch.advice.exception.AlreadySoldInsuranceException;
+import com.study.insuranceandbatch.advice.exception.NoSuchCoverageException;
 import com.study.insuranceandbatch.dto.Result;
 import com.study.insuranceandbatch.dto.request.CoverageRequest;
 import com.study.insuranceandbatch.dto.request.ProductCoverageMapRequest;
 import com.study.insuranceandbatch.dto.request.ProductRequest;
+import com.study.insuranceandbatch.entity.Coverage;
 import com.study.insuranceandbatch.service.ProductCoverageService;
 import com.study.insuranceandbatch.serviceFactory.ProductCoverageServiceFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -45,7 +50,13 @@ public class ProductCoverageController {
     @DeleteMapping("map")
     public Result deleteProductCoverageMap(@RequestBody @Valid ProductCoverageMapRequest request){
         ProductCoverageService productCoverageService = productCoverageServiceFactory.getProductCoverageService();
-        return productCoverageService.deleteProductCoverageMap(request);
+        Result result;
+        try {
+            result = productCoverageService.deleteProductCoverageMap(request);
+        }catch (JpaSystemException e){
+            throw new AlreadySoldInsuranceException();
+        }
+        return result;
     }
 
     @GetMapping("product/all")

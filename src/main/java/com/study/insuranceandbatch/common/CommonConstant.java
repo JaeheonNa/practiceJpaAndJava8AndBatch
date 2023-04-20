@@ -18,6 +18,10 @@ public class CommonConstant {
     public static int NORMAL_CONTRACT = 1;
     public static int CANCELED_CONTRACT = 2;
 
+    public static int DEAD = 0;
+    public static int ALIVE = 1;
+
+
     public static String convertInsuranceCode(int insuranceCode){
         String state = "";
         switch(insuranceCode){

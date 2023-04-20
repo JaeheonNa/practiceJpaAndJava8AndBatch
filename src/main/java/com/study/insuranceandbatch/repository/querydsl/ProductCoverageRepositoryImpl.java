@@ -2,6 +2,7 @@ package com.study.insuranceandbatch.repository.querydsl;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.study.insuranceandbatch.common.CommonConstant;
 import com.study.insuranceandbatch.dto.projection.ProductCoverageProjection;
 import com.study.insuranceandbatch.entity.Product;
 import com.study.insuranceandbatch.entity.ProductCoverage;
@@ -21,12 +22,13 @@ public class ProductCoverageRepositoryImpl implements ProductCoverageRepositoryC
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<ProductCoverageProjection> getAllProductCoverages() {
+    public List<ProductCoverageProjection> getAliveProductCoverages() {
         List<ProductCoverageProjection> productCoverageProjections
                 = queryFactory.select(Projections.constructor(ProductCoverageProjection.class,
                         productCoverage.product,
                         productCoverage.coverage
                 )).from(productCoverage)
+                .where(productCoverage.useYn.eq(CommonConstant.ALIVE))
                 .orderBy(productCoverage.product.seq.asc())
                 .fetch();
         return productCoverageProjections;

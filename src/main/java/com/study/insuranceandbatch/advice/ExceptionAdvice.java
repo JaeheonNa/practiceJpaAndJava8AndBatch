@@ -94,4 +94,14 @@ public class ExceptionAdvice {
         log.error(ExceptionUtils.getStackTrace(e));
         return new Result().fail("이미 매핑된 정보는 추가 매핑할 수 없습니다.", 400);
     }
+
+    @ExceptionHandler(AlreadySoldInsuranceException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    protected Result alreadySoldInsuranceException(Exception e) {
+        log.error(ExceptionUtils.getStackTrace(e));
+        return new Result().fail("이미 판매된 상품은 제거할 수 없습니다.", 400);
+    }
+
+
 }

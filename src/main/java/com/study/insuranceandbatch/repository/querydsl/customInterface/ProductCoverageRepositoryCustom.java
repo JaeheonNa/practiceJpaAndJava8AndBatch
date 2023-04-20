@@ -9,7 +9,7 @@ import java.util.List;
 
 @Repository
 public interface ProductCoverageRepositoryCustom {
-    List<ProductCoverageProjection> getAllProductCoverages();
+    List<ProductCoverageProjection> getAliveProductCoverages();
     List<ProductCoverage> findByProductSeqAndCoverageSeqs(Long productSeq, List<Long> coverageSeqs);
     ProductCoverage findByProductSeqAndCoverageSeq(Long productSeq, Long coverageSeq);
     List<Long> getAllCoveragesByProduct(Product product);
