@@ -28,7 +28,6 @@ public class ProductCoverageRepositoryImpl implements ProductCoverageRepositoryC
                         productCoverage.coverage,
                         productCoverage.useYn
                 )).from(productCoverage)
-                .where(productCoverage.useYn.eq(CommonConstant.ALIVE))
                 .orderBy(productCoverage.product.seq.asc())
                 .fetch();
         return productCoverageProjections;

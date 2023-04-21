@@ -37,9 +37,9 @@ public class CommonConstant {
     public static String productCoverageState(int productCoverageState){
         String state = "";
         switch(productCoverageState){
-            case 1: state ="정상";
+            case 0: state ="미사용";
                 break;
-            case 2: state ="철회";
+            case 1: state ="사용";
         }
         return state;
     }

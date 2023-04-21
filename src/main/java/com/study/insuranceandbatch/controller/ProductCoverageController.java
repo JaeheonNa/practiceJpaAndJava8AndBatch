@@ -7,7 +7,6 @@ import com.study.insuranceandbatch.dto.Result;
 import com.study.insuranceandbatch.dto.request.CoverageRequest;
 import com.study.insuranceandbatch.dto.request.ProductCoverageMapRequest;
 import com.study.insuranceandbatch.dto.request.ProductRequest;
-import com.study.insuranceandbatch.entity.Coverage;
 import com.study.insuranceandbatch.service.ProductCoverageService;
 import com.study.insuranceandbatch.serviceFactory.ProductCoverageServiceFactory;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +15,6 @@ import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
