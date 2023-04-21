@@ -21,11 +21,16 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create-drop
+      hbm2ddl:
+        import_files: classpath:db/data.sql # DB 파일 명시적으로 선택
+        import_files_sql_extractor: org.hibernate.tool.hbm2ddl.MultipleLinesSqlCommandExtractor # 멀티 라인 입력 가능하도록
     properties:
       hibernate:
         show-sql: true
         format_sql : true
     show-sql: true
+
+
 
   h2:
     console:
