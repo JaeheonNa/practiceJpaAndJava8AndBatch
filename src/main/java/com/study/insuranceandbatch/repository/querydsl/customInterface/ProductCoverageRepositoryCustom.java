@@ -15,7 +15,6 @@ public interface ProductCoverageRepositoryCustom {
 
     List<ProductCoverage> findAllProductCoveragesByCoverageSeqs(List<Long> coverageSeqs);
     List<ProductCoverage> findAliveByProductAndCoverageSeqs(Product product, List<Long> coverageSeqs);
-    List<ProductCoverage> findAliveProductCoverageByProductAndCoverages(Product product, List<Long> coverageSeqs);
 
 
 }

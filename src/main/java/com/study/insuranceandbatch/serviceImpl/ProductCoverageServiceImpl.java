@@ -5,6 +5,7 @@ import com.study.insuranceandbatch.advice.exception.AlreadySoldInsuranceExceptio
 import com.study.insuranceandbatch.advice.exception.NoSuchCoverageException;
 import com.study.insuranceandbatch.advice.exception.NoSuchProductException;
 import com.study.insuranceandbatch.common.CommonConstant;
+import com.study.insuranceandbatch.dto.CoverageDto;
 import com.study.insuranceandbatch.dto.Result;
 import com.study.insuranceandbatch.dto.projection.ProductCoverageProjection;
 import com.study.insuranceandbatch.dto.request.CoverageRequest;
@@ -131,7 +132,11 @@ public class ProductCoverageServiceImpl implements ProductCoverageService {
         List<Product> products = allProductCoverages.stream().map(pc -> pc.getProduct()).distinct().collect(Collectors.toList());
 
         List<ProductCoveragesResponse> responseResult = products.stream().map(p -> {
-            List<Coverage> coverageForProduct = allProductCoverages.stream().filter(pc -> pc.getProduct().equals(p)).map(pc -> pc.getCoverage()).collect(Collectors.toList());
+            List<CoverageDto> coverageForProduct = allProductCoverages.stream()
+                    .filter(pc -> pc.getProduct().equals(p))
+                    .map(pc -> CoverageDto.convert(pc.getCoverage(), pc.getUseYn()))
+                    .collect(Collectors.toList());
+
             return ProductCoveragesResponse.builder()
                     .product(p)
                     .coverages(coverageForProduct).build();

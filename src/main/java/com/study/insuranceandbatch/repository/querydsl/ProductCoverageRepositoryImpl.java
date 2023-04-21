@@ -4,7 +4,6 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.study.insuranceandbatch.common.CommonConstant;
 import com.study.insuranceandbatch.dto.projection.ProductCoverageProjection;
-import com.study.insuranceandbatch.entity.Contract;
 import com.study.insuranceandbatch.entity.Product;
 import com.study.insuranceandbatch.entity.ProductCoverage;
 import com.study.insuranceandbatch.repository.querydsl.customInterface.ProductCoverageRepositoryCustom;
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-import static com.study.insuranceandbatch.entity.QContractProductCoverage.contractProductCoverage;
 import static com.study.insuranceandbatch.entity.QProductCoverage.productCoverage;
 
 
@@ -27,7 +25,8 @@ public class ProductCoverageRepositoryImpl implements ProductCoverageRepositoryC
         List<ProductCoverageProjection> productCoverageProjections
                 = queryFactory.select(Projections.constructor(ProductCoverageProjection.class,
                         productCoverage.product,
-                        productCoverage.coverage
+                        productCoverage.coverage,
+                        productCoverage.useYn
                 )).from(productCoverage)
                 .where(productCoverage.useYn.eq(CommonConstant.ALIVE))
                 .orderBy(productCoverage.product.seq.asc())
@@ -58,16 +57,6 @@ public class ProductCoverageRepositoryImpl implements ProductCoverageRepositoryC
     public List<ProductCoverage> findAllProductCoveragesByCoverageSeqs(List<Long> coverageSeqs) {
         List<ProductCoverage> productCoverages = queryFactory.selectFrom(productCoverage)
                 .where(productCoverage.coverage.seq.in(coverageSeqs))
-                .fetch();
-        return productCoverages;
-    }
-
-    @Override
-    public List<ProductCoverage> findAliveProductCoverageByProductAndCoverages(Product product, List<Long> coverageSeqs) {
-        List<ProductCoverage> productCoverages = queryFactory.select(productCoverage)
-                .from(productCoverage)
-                .where(productCoverage.product.eq(product)
-                        .and(productCoverage.coverage.seq.in(coverageSeqs)))
                 .fetch();
         return productCoverages;
     }

@@ -10,4 +10,5 @@ import lombok.Data;
 public class ProductCoverageProjection {
     private Product product;
     private Coverage coverage;
+    private int useYn;
 }

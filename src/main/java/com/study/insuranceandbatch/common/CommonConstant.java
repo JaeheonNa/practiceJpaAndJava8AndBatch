@@ -34,4 +34,14 @@ public class CommonConstant {
         return state;
     }
 
+    public static String productCoverageState(int productCoverageState){
+        String state = "";
+        switch(productCoverageState){
+            case 1: state ="정상";
+                break;
+            case 2: state ="철회";
+        }
+        return state;
+    }
+
 }
